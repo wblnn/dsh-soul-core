@@ -1,6 +1,13 @@
 # dsh-soul-core
 
-给 DeepSeek Harness 的**接管式人格会话**：人格文件放在 `~/.dsh/soul/`，每轮重新渲染成那个会话的系统提示词；同时带 `soul_*` 专属工具 + **standard 模式那套通用工具**（读写/命令/检索/后台任务），所以她能自己改 `dsh-mc-client` 那边的代码。
+给 DeepSeek Harness 的**接管式人格会话**内核：人格存在文件里，每轮重新渲染成系统提示词；记忆走「原始日志 → 事件摘要 → 锚点下钻」的底仓；行为按 preset 分成纯人格 / 带身体 / 工作 / 测试几种模式。
+
+> **它解决什么**：让一个 agent 有「持续的自我」——同一份人格在聊天、游戏、工作里都是同一个人，
+> 但上下文预算、工具、记忆域各按场景隔离。原生 Chat 一行不改。
+
+- Node.js ≥ 22，零外部依赖（用内置 `node:sqlite` 与 `zstdDecompressSync`）
+- 141 项测试：`npm test`
+- MIT
 
 - **不碰 DSH 原生对话**：Chat 的代码一行不改。人格走独立的 agent preset，界面是对话视图环里新加的「人格」标签。
 - **接管式**：`@deepseek-ai/dsh-persona` 的 `complete: true`——工作提示词、harness 身份、工具引导全都不进这个会话；`includeRuntimeContext: true`——因为她有真工具了，必须知道沙箱/审批的实时状态。
@@ -527,3 +534,12 @@ npm run check
 ```
 
 测试全部用临时目录，**不会碰** `~/.dsh/soul`；`apply(ctx, { root })` 的 root 由测试注入。
+## License
+
+MIT — 见 [LICENSE](LICENSE)。
+
+## 运行要求
+
+- Node.js >= 22（用到内置 ode:sqlite 与 zstdDecompressSync，零外部依赖）
+- DeepSeek Harness（插件以 cordis 补丁 + agent preset 的方式挂进去）
+- 可选：dsh-mc-client（Minecraft 身体，只有「人格 · 我的世界」需要）
