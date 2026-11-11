@@ -1,5 +1,5 @@
 # >>> dsh-soul-core preset (managed, do not edit) >>>
-# block-version: 24
+# block-version: 25
 # 由 dsh-soul-core/install.mjs 管理的几行（可用 --revert 摘掉）
 #
 # 注意：顶层 `- id: X` 是**按 id 覆盖已有行**，不存在的 id 会被静默忽略。
