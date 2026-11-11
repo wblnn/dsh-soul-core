@@ -17,12 +17,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/OWNER/dsh-soul-core.git"
+    "url": "https://github.com/wblnn/dsh-soul-core.git"
   },
   "bugs": {
-    "url": "https://github.com/OWNER/dsh-soul-core/issues"
+    "url": "https://github.com/wblnn/dsh-soul-core/issues"
   },
-  "homepage": "https://github.com/OWNER/dsh-soul-core#readme",
+  "homepage": "https://github.com/wblnn/dsh-soul-core#readme",
   "main": "lib/index.js",
   "dsh": {
     "bundle": {
