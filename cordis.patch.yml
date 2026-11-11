@@ -1,0 +1,258 @@
+# >>> dsh-soul-core preset (managed, do not edit) >>>
+# block-version: 22
+# 由 dsh-soul-core/install.mjs 管理的几行（可用 --revert 摘掉）
+#
+# 注意：顶层 `- id: X` 是**按 id 覆盖已有行**，不存在的 id 会被静默忽略。
+# 新插件必须走 `- insert:` 列表，否则永远加载不上（这个坑踩过）。
+- insert:
+    # 1) profile 级 ui 实例：只挂 /dsh-soul/api/*，让设置页与对话视图环有数据可取。
+    - id: soul-ui
+      name: 'dsh-soul-core'
+      config:
+        mode: ui
+    # 2) 接管式人格会话 preset：变量 + soul_* 工具只出现在这个 agent 里，
+    #    工作态（standard）一个都不沾。
+    - id: preset-soul
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: soul
+        name: 人格
+        description: 接管式人格会话：人格文件每轮渲染为唯一系统提示词，零通用工具，只带 soul_* 专属工具。
+        order: 2
+        plugins:
+          - id: soul-persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              complete: true
+              includeRuntimeContext: true
+              prefix: '{{soul_block}}'
+          - id: soul-core
+            name: 'dsh-soul-core'
+            config:
+              mode: persona
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+                config:
+                  # 更早压缩：默认 0.8 意味着快撞上限才动手，长会话容易把进程顶爆
+                  thresholdRatio: 0.55
+                  # 少留原文：默认 0.16 留太多，压缩后仍然很大
+                  retainRatio: 0.1
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 3000
+                  headChars: 1200
+                  tailChars: 600
+    # ── 测试模式（纯聊天域）：和「人格」同构，但不留痕 ──────────
+    - id: preset-soul-test-chat
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: soul-test-chat
+        name: 人格 · 测试（纯聊天）
+        description: 和「人格」同构的测试会话：不进底仓、不写记忆/技能/日记、预检索不注入本会话历史。
+        order: 6
+        plugins:
+          - id: soul-persona-test-chat
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              complete: true
+              includeRuntimeContext: true
+              prefix: '{{soul_block}}'
+          - id: soul-core-test-chat
+            name: 'dsh-soul-core'
+            config:
+              mode: persona
+              domain: persona
+              testMode: true
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+                config:
+                  thresholdRatio: 0.55
+                  retainRatio: 0.1
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 3000
+                  headChars: 1200
+                  tailChars: 600
+    # ── 工作模式：同一个自我，但手全给上 ───────────────────────
+    # preset id 是 soul-work，**不在** persona 白名单里 →
+    # 工作会话不进人格底仓（工作内容从一开始就隔离掉），也不受联网封禁影响。
+    # complete 故意不设 true：工作模式需要 DSH 的工具引导章节，
+    # 只要 prefix 把身份换成她自己的就行（suffix 留空 → 顶掉部署级后缀）。
+    - id: preset-soul-work
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: soul-work
+        name: 人格 · 工作
+        description: 同一个自我，带全套通用工具（读写/检索/终端/后台任务/联网）。工作内容不进人格底仓。
+        order: 5
+        plugins:
+          - id: soul-persona-work
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              includeRuntimeContext: true
+              prefix: '{{soul_block}}'
+          # 只出提示词：让工作模式复用她的人格块，但不给她 soul_* 写记忆的手
+          - id: soul-core-work
+            name: 'dsh-soul-core'
+            config:
+              mode: prompt
+              domain: persona
+              handTools: true
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+                config:
+                  thresholdRatio: 0.55
+                  retainRatio: 0.1
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 3000
+                  headChars: 1200
+                  tailChars: 600
+    # ── 测试模式：同一个人格，但不留痕 ───────────────────────────
+    # preset id 故意叫 soul-test 且**不在** persona presets 白名单里 →
+    # 连别的实例也不会把测试对话摄进底仓（写入侧隔离，不靠自觉）。
+    - id: preset-soul-test
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: soul-test
+        name: 人格 · 测试（我的世界）
+        description: 用来测注入与检索：会话不进底仓、不写记忆/技能/日记、预检索也不注入本会话历史。
+        order: 4
+        plugins:
+          - id: soul-persona-test
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              complete: true
+              includeRuntimeContext: true
+              prefix: '{{soul_block}}'
+          - id: soul-core-test
+            name: 'dsh-soul-core'
+            config:
+              mode: persona
+              domain: mc
+              testMode: true
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+                config:
+                  thresholdRatio: 0.55
+                  retainRatio: 0.1
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 3000
+                  headChars: 1200
+                  tailChars: 600
+    # ── 同一个人格，带 Minecraft 身体（需要 dsh-mc-client 已装）────────────
+    # 人格块不动；多一档 mcc_* 工具。记忆与技能落 mc 域：
+    # 经历进同一个底仓（preset=soul-mc 也算"她的生活"），技巧落 skills/mc/。
+    - id: preset-soul-mc
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: soul-mc
+        name: 人格 · 我的世界
+        description: 同一个人格，带 Minecraft 身体：mcc_* 工具 + mc 域技能与记忆。她负责想目标与复盘，身体负责走路挖矿打架。
+        order: 3
+        plugins:
+          - id: soul-persona-mc
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              complete: true
+              includeRuntimeContext: true
+              prefix: '{{soul_block}}'
+          - id: soul-core-mc
+            name: 'dsh-soul-core'
+            config:
+              mode: persona
+              domain: mc
+          # mcc_* 工具只在这个 preset 里可见。不要把 dsh-mc-client 装成 profile 级插件：
+          # 那样每个 agent（含纯聊天人格态与工作会话）都会背 25 个工具 schema。
+          - id: mc-client
+            name: 'dsh-mc-client'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+                config:
+                  # 更早压缩：默认 0.8 意味着快撞上限才动手，长会话容易把进程顶爆
+                  thresholdRatio: 0.55
+                  # 少留原文：默认 0.16 留太多，压缩后仍然很大
+                  retainRatio: 0.1
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 3000
+                  headChars: 1200
+                  tailChars: 600
+# <<< dsh-soul-core preset <<<

@@ -1,0 +1,56 @@
+{
+  "name": "dsh-soul-core",
+  "version": "0.1.0",
+  "description": "接管式人格会话内核：每轮从 ~/.dsh/soul 渲染人格为唯一系统提示词（complete），提供 soul_* 专属工具与「人格」视图。 · Writable, disk-backed self for DeepSeek Harness persona sessions.",
+  "type": "module",
+  "license": "MIT",
+  "author": "dsh-soul-core contributors",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "persona",
+    "memory",
+    "agent",
+    "minecraft"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OWNER/dsh-soul-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OWNER/dsh-soul-core/issues"
+  },
+  "homepage": "https://github.com/OWNER/dsh-soul-core#readme",
+  "main": "lib/index.js",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node test/persona-api.test.mjs && node test/now.test.mjs && node test/plugin-load.test.mjs && node test/config.test.mjs && node test/memory.test.mjs && node test/skills.test.mjs && node test/mc-chat.test.mjs && node test/mc-events.test.mjs && node test/mc-inbox.test.mjs && node test/domain-memory.test.mjs && node test/people.test.mjs && node test/tool-deny.test.mjs && node test/prefetch.test.mjs && node test/diary.test.mjs && node test/day-material.test.mjs",
+    "check": "node --check lib/index.js && node --check lib/persona-api.js && node --check lib/define-tool.js && node --check lib/client.js && node --check lib/skills.js && node --check lib/people.js && node --check lib/inject.js && node --check lib/prefetch.js && node --check lib/diary.js && node --check lib/mc-chat.js && node --check lib/mc-events.js && node --check lib/mc-inbox.js && node --check lib/session-source.js && node --check lib/memory-store.js && node --check bin/mem.mjs && node --check install.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "lib/",
+    "bin/",
+    "templates/",
+    "install.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ]
+}

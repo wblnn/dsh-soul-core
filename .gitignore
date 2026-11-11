@@ -1,0 +1,22 @@
+node_modules/
+
+# 她跑起来会产生的东西，不进仓库
+soul-core.log
+memory-tree/
+diary/
+memory/
+skills/
+people.json
+ingest-deny.json
+*.db
+*.db-wal
+*.db-shm
+
+# 临时脚本
+_*.mjs
+
+# 编辑器/系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
