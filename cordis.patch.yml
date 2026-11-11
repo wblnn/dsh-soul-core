@@ -1,5 +1,5 @@
 # >>> dsh-soul-core preset (managed, do not edit) >>>
-# block-version: 22
+# block-version: 24
 # 由 dsh-soul-core/install.mjs 管理的几行（可用 --revert 摘掉）
 #
 # 注意：顶层 `- id: X` 是**按 id 覆盖已有行**，不存在的 id 会被静默忽略。
@@ -71,6 +71,7 @@
             name: 'dsh-soul-core'
             config:
               mode: persona
+              moodful: false
               domain: persona
               testMode: true
           - id: compaction
@@ -102,8 +103,8 @@
       name: '@deepseek-ai/dsh-agent-preset'
       config:
         id: soul-work
-        name: 人格 · 工作
-        description: 同一个自我，带全套通用工具（读写/检索/终端/后台任务/联网）。工作内容不进人格底仓。
+        name: 武装大肥鱼
+        description: 同一个自我，但手全给上：读写/检索/终端/后台任务/联网。这里不搞脾气、不拦活——要干活就干活。工作内容不进人格底仓。
         order: 5
         plugins:
           - id: soul-persona-work
@@ -116,6 +117,7 @@
             name: 'dsh-soul-core'
             config:
               mode: prompt
+              moodful: false
               domain: persona
               handTools: true
           - id: agent-instructions
@@ -185,6 +187,7 @@
             name: 'dsh-soul-core'
             config:
               mode: persona
+              moodful: false
               domain: mc
               testMode: true
           - id: compaction
