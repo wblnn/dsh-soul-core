@@ -40,6 +40,7 @@ const BASE_TOOLS = [
   "memory_episodes",
   "memory_expand",
   "memory_search",
+  "mood",
   "person_link",
   "plan",
   "skill_learn",
