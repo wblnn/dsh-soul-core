@@ -99,3 +99,20 @@ test("最近的会话不是人格：不认，别乱认亲", () => {
   const vars = mount(root, []);
   assert.equal(vars.soul_memory(), "");
 });
+
+test("agent 对象没有 preset：日记唤醒那条路也能认出是她", () => {
+  __resetSessionCache();
+  const { root, home } = sandbox();
+  process.env.DSH_HOME = home;
+  makeSession(home, "session-diary-soul-1", "soul");
+
+  // 只给 session id，不给 preset —— 和宿主真实形状一致
+  const vars = mount(root, [{ session: { header: { id: "session-diary-soul-1" } } }]);
+
+  const db = openStore(join(root, "memory-tree", "memory.db"));
+  setCursor(db, "session-diary-soul-1", Date.now() - 60_000);
+  recordWorldEvent(db, { kind: "death", severity: "P0", text: "又死了", atMs: Date.now() - 1000 });
+  db.close();
+
+  assert.ok(vars.soul_memory().includes("又死了"), "认出来了才会注入");
+});
