@@ -41,6 +41,7 @@ const BASE_TOOLS = [
   "memory_expand",
   "memory_search",
   "person_link",
+  "plan",
   "skill_learn",
   "skill_list",
   "skill_read",
