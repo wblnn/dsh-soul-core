@@ -14,8 +14,11 @@ import { DEFAULT_SCHEDULE, presenceAt, renderPresence } from "../lib/presence.js
 
 /* ───────────────────────── 作息 ───────────────────────── */
 
-test("作息：23:00–08:00 是睡眠，跨午夜也算", () => {
-  assert.equal(presenceAt(new Date(2026, 10, 8, 23, 30)).state, "sleep");
+test("作息：默认 01:30–08:00 是睡眠，跨午夜也算", () => {
+  assert.equal(DEFAULT_SCHEDULE.sleep[0], "01:30", "默认入睡时间（主人回家晚）");
+  assert.equal(presenceAt(new Date(2026, 10, 8, 23, 30)).state, "awake", "23:30 还醒着");
+  assert.equal(presenceAt(new Date(2026, 10, 9, 1, 29)).state, "awake");
+  assert.equal(presenceAt(new Date(2026, 10, 9, 1, 30)).state, "sleep");
   assert.equal(presenceAt(new Date(2026, 10, 9, 3, 0)).state, "sleep");
   assert.equal(presenceAt(new Date(2026, 10, 9, 7, 59)).state, "sleep");
   assert.equal(presenceAt(new Date(2026, 10, 9, 8, 0)).state, "awake");
