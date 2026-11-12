@@ -38,7 +38,7 @@
     }
   },
   "scripts": {
-    "test": "node test/persona-api.test.mjs && node test/now.test.mjs && node test/plugin-load.test.mjs && node test/config.test.mjs && node test/memory.test.mjs && node test/skills.test.mjs && node test/mc-chat.test.mjs && node test/mc-events.test.mjs && node test/mc-inbox.test.mjs && node test/domain-memory.test.mjs && node test/people.test.mjs && node test/tool-deny.test.mjs && node test/prefetch.test.mjs && node test/diary.test.mjs && node test/presence.test.mjs && node test/day-material.test.mjs",
+    "test": "node test/persona-api.test.mjs && node test/now.test.mjs && node test/plugin-load.test.mjs && node test/config.test.mjs && node test/memory.test.mjs && node test/skills.test.mjs && node test/mc-chat.test.mjs && node test/mc-events.test.mjs && node test/mc-inbox.test.mjs && node test/domain-memory.test.mjs && node test/people.test.mjs && node test/tool-deny.test.mjs && node test/prefetch.test.mjs && node test/diary.test.mjs && node test/incremental.test.mjs && node test/recent-sessions.test.mjs && node test/presence.test.mjs && node test/day-material.test.mjs",
     "check": "node --check lib/index.js && node --check lib/persona-api.js && node --check lib/define-tool.js && node --check lib/client.js && node --check lib/skills.js && node --check lib/people.js && node --check lib/inject.js && node --check lib/prefetch.js && node --check lib/diary.js && node --check lib/presence.js && node --check lib/gate.js && node --check lib/mc-say.js && node --check lib/mc-chat.js && node --check lib/mc-events.js && node --check lib/mc-inbox.js && node --check lib/session-source.js && node --check lib/memory-store.js && node --check bin/mem.mjs && node --check install.mjs"
   },
   "engines": {
