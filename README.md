@@ -564,12 +564,28 @@ npm run check
 ```
 
 测试全部用临时目录，**不会碰** `~/.dsh/soul`；`apply(ctx, { root })` 的 root 由测试注入。
+
+## 计划表（她自己的事）
+
+`plans.json`，一条计划 9 个字段。**不是待办清单**：没有优先级、没有逾期提醒、没有完成率。
+
+三条硬约束：
+
+- **标 done 必须有证据**（坐标 / 物品 / 事件锚点）—— 否则「我成功了」就能给自己发奖，心情会变成正反馈飞轮
+- **主动放弃不扣分**（`dropped`）—— 否则她不敢开新项目
+- **注入只给 3 行 / 140 字符** —— 整张表注入就变成待办清单，她会围着清单写汇报
+
+来源三档：`self`（她自己开的）/ `owner`（他交办的）/ `mc-goal`（身体层目标自动入账）。
+上限 12 条活跃，满了归档最老的（变 `dropped`，不删）；7 天没动自动归档（僵尸宏图）。
+
+工具：`plan { action: list | add | doing | fail | done | drop, id, title, note, evidence }`。
+
 ## License
 
 MIT — 见 [LICENSE](LICENSE)。
 
 ## 运行要求
 
-- Node.js >= 22（用到内置 ode:sqlite 与 zstdDecompressSync，零外部依赖）
+- Node.js >= 22（用到内置 node:sqlite 与 zstdDecompressSync，零外部依赖）
 - DeepSeek Harness（插件以 cordis 补丁 + agent preset 的方式挂进去）
 - 可选：dsh-mc-client（Minecraft 身体，只有「人格 · 我的世界」需要）
