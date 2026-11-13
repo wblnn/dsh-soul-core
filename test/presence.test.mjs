@@ -14,36 +14,42 @@ import { DEFAULT_SCHEDULE, presenceAt, renderPresence } from "../lib/presence.js
 
 /* ───────────────────────── 作息 ───────────────────────── */
 
-test("作息：默认 01:30–08:00 是睡眠，跨午夜也算", () => {
-  assert.equal(DEFAULT_SCHEDULE.sleep[0], "01:30", "默认入睡时间（主人回家晚）");
-  assert.equal(presenceAt(new Date(2026, 10, 8, 23, 30)).state, "awake", "23:30 还醒着");
+test("作息：默认 01:30–08:00 是「深夜」，不是「睡着」", () => {
+  assert.equal(DEFAULT_SCHEDULE.night[0], "01:30", "默认深夜起点（主人回家晚）");
+  assert.equal(presenceAt(new Date(2026, 10, 8, 23, 30)).state, "awake", "23:30 还清醒");
   assert.equal(presenceAt(new Date(2026, 10, 9, 1, 29)).state, "awake");
-  assert.equal(presenceAt(new Date(2026, 10, 9, 1, 30)).state, "sleep");
-  assert.equal(presenceAt(new Date(2026, 10, 9, 3, 0)).state, "sleep");
-  assert.equal(presenceAt(new Date(2026, 10, 9, 7, 59)).state, "sleep");
+  assert.equal(presenceAt(new Date(2026, 10, 9, 1, 30)).state, "night");
+  assert.equal(presenceAt(new Date(2026, 10, 9, 3, 0)).state, "night");
+  assert.equal(presenceAt(new Date(2026, 10, 9, 7, 59)).state, "night");
   assert.equal(presenceAt(new Date(2026, 10, 9, 8, 0)).state, "awake");
   assert.equal(presenceAt(new Date(2026, 10, 9, 12, 0)).state, "awake");
 });
 
-test("作息：专注时段落区间内，且优先级低于睡眠", () => {
+test("作息：深夜不是停机——文案要求「人还在」，不许用困把话头掐断", () => {
+  const text = renderPresence(new Date(2026, 10, 9, 2, 0));
+  assert.ok(text.includes("深夜"));
+  assert.ok(text.includes("不耐烦") || text.includes("耐心低"));
+  assert.ok(text.includes("人还在"), "必须写明她还在");
+  assert.ok(text.includes("不许"), "要禁止「明天再说」式敷衍");
+  assert.ok(!text.includes("是被吵醒的"), "不再是「你是被吵醒的」那套");
+});
+
+test("作息：专注时段落区间内，且优先级低于深夜", () => {
   assert.equal(presenceAt(new Date(2026, 10, 9, 14, 30)).state, "focus");
   assert.equal(presenceAt(new Date(2026, 10, 9, 16, 0)).state, "awake");
-  const s = { sleep: ["13:00", "15:00"], focus: [["14:00", "16:00"]] };
-  assert.equal(presenceAt(new Date(2026, 10, 9, 14, 30), s).state, "sleep");
+  const s = { night: ["13:00", "15:00"], focus: [["14:00", "16:00"]] };
+  assert.equal(presenceAt(new Date(2026, 10, 9, 14, 30), s).state, "night");
+  // 旧配置（schedule.sleep）仍然认，语义当深夜
+  assert.equal(presenceAt(new Date(2026, 10, 9, 14, 30), { sleep: ["13:00", "15:00"] }).state, "night");
 });
 
 test("作息：注入文案要给出说话方式（不是只报时间）", () => {
-  const sleep = renderPresence(new Date(2026, 10, 9, 2, 0));
-  assert.ok(sleep.includes("被吵醒"));
-  assert.ok(sleep.includes("极短"));
-  assert.ok(sleep.includes("拒绝"));
-
   const focus = renderPresence(new Date(2026, 10, 9, 14, 30));
   assert.ok(focus.includes("敷衍"));
   assert.ok(focus.includes("不要列清单"));
 
   assert.equal(renderPresence(new Date(2026, 10, 9, 12, 0)), "", "醒着不加噪音");
-  assert.ok(DEFAULT_SCHEDULE.sleep.length === 2);
+  assert.ok(DEFAULT_SCHEDULE.night.length === 2);
 });
 
 /* ───────────────────────── 闸门判定 ───────────────────────── */
