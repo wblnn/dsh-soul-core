@@ -1,5 +1,5 @@
 # >>> dsh-soul-core preset (managed, do not edit) >>>
-# block-version: 38
+# block-version: 39
 # 由 dsh-soul-core/install.mjs 管理的几行（可用 --revert 摘掉）
 #
 # 注意：顶层 `- id: X` 是**按 id 覆盖已有行**，不存在的 id 会被静默忽略。
@@ -59,7 +59,7 @@
         id: soul-test-chat
         name: 人格 · 测试（纯聊天）
         description: 和「人格」同构的测试会话：不进底仓、不写记忆/技能/日记、预检索不注入本会话历史。
-        order: 6
+        order: 7
         plugins:
           - id: soul-persona-test-chat
             name: '@deepseek-ai/dsh-persona'
@@ -94,6 +94,48 @@
                   thresholdChars: 3000
                   headChars: 1200
                   tailChars: 600
+    # ── QQ 模式：同一个自我，但活在 QQ 上（虚拟屏 + 截图看、发消息说）──────
+    # 工具来自 dsh-vdd-qq（profile 级注册）；我们的插件只在这一个域放行那四个工具。
+    - id: preset-soul-qq
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: soul-qq
+        name: 人格 · QQ
+        description: 在 QQ 上活着：截图看会话、点列表换群、发消息。域记忆 MEMORY.qq.md，技巧在 skills/qq/。
+        order: 4
+        plugins:
+          - id: soul-persona-qq
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              complete: true
+              includeRuntimeContext: true
+              prefix: '{{soul_block}}'
+          - id: soul-core-qq
+            name: 'dsh-soul-core'
+            config:
+              mode: persona
+              domain: qq
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+                config:
+                  thresholdRatio: 0.55
+                  retainRatio: 0.1
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 3000
+                  headChars: 1200
+                  tailChars: 600
+
     # ── 工作模式：同一个自我，但手全给上 ───────────────────────
     # preset id 是 soul-work，**不在** persona 白名单里 →
     # 工作会话不进人格底仓（工作内容从一开始就隔离掉），也不受联网封禁影响。
@@ -175,7 +217,7 @@
         id: soul-test
         name: 人格 · 测试（我的世界）
         description: 用来测注入与检索：会话不进底仓、不写记忆/技能/日记、预检索也不注入本会话历史。
-        order: 4
+        order: 6
         plugins:
           - id: soul-persona-test
             name: '@deepseek-ai/dsh-persona'
