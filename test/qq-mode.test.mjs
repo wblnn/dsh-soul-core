@@ -44,13 +44,16 @@ after(() => {
   }
 });
 
-test("qq 域：人格块里有 QQ 操作说明", () => {
+test("qq 域：人格块里有 QQ 操作说明（按最省 token 的顺序）", () => {
   const { block } = render("qq");
   assert.ok(block.includes("你在 QQ 上"), "要有场景说明");
-  assert.ok(block.includes("qq_ui read"), "要教她先看截图");
+  assert.ok(block.includes("qq_ui layout"), "第一步应是 layout（不截图拿坐标）");
+  assert.ok(block.includes("qq_ui read"), "要教她读消息");
+  assert.ok(block.includes("默认返回文字"), "read 现在是 OCR 文本，不是图");
   assert.ok(block.includes("qq_message send"), "要教她怎么发");
-  assert.ok(block.includes("发完必须截图确认"), "QQ 没有发送成功保证，必须确认");
+  assert.ok(block.includes("不要每次发完再 read"), "别每发一条都验证一遍（那是最贵的一步）");
   assert.ok(block.includes("别一口气发十条"), "群里别刷屏");
+  assert.ok(block.includes("image:true"), "要说明看图是例外");
 });
 
 test("非 qq 域：不该出现 QQ 说明", () => {
