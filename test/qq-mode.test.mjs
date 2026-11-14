@@ -44,16 +44,16 @@ after(() => {
   }
 });
 
-test("qq 域：人格块里有 QQ 操作说明（按最省 token 的顺序）", () => {
+test("qq 域：人格块里有 OneBot 操作说明", () => {
   const { block } = render("qq");
   assert.ok(block.includes("你在 QQ 上"), "要有场景说明");
-  assert.ok(block.includes("qq_ui layout"), "第一步应是 layout（不截图拿坐标）");
-  assert.ok(block.includes("qq_ui read"), "要教她读消息");
-  assert.ok(block.includes("默认返回文字"), "read 现在是 OCR 文本，不是图");
-  assert.ok(block.includes("qq_message send"), "要教她怎么发");
-  assert.ok(block.includes("不要每次发完再 read"), "别每发一条都验证一遍（那是最贵的一步）");
-  assert.ok(block.includes("别一口气发十条"), "群里别刷屏");
-  assert.ok(block.includes("image:true"), "要说明看图是例外");
+  assert.ok(block.includes("协议端"), "要说清走协议端，不是截屏");
+  assert.ok(block.includes("qq_status"), "先看通道状态");
+  assert.ok(block.includes("qq_recent"), "要教她读上下文");
+  assert.ok(block.includes("qq_send"), "要教她怎么发");
+  assert.ok(block.includes("qq_wait"), "要告诉她是真推送，别轮询");
+  assert.ok(block.includes("别一口气"), "群里别刷屏");
+  assert.ok(block.includes("旧") && block.includes("备用"), "旧虚拟屏方案要说明已停用但保留");
 });
 
 test("非 qq 域：不该出现 QQ 说明", () => {
@@ -63,10 +63,14 @@ test("非 qq 域：不该出现 QQ 说明", () => {
   }
 });
 
-test("qq 域：四个 vdd 工具不在 deny 名单里（其他域在）", async () => {
+test("工具按域收窄：旧虚拟屏工具全禁，OneBot 工具只在 qq 放行", async () => {
   // 直接验纯函数，别依赖宿主 restrict
   const src = readFileSync(new URL("../lib/index.js", import.meta.url), "utf8");
   assert.ok(src.includes("function scopedDenyFor"), "要有按域收窄的实现");
-  assert.ok(src.includes('domainName === "qq" ? [...denyExtra]'), "qq 域不追加禁用");
-  assert.ok(src.includes("...QQ_DOMAIN_TOOLS"), "其他域追加禁用");
+  assert.ok(src.includes("SCREEN_QQ_TOOLS"), "旧虚拟屏工具要有名单");
+  assert.ok(src.includes("ONEBOT_QQ_TOOLS"), "OneBot 工具要有名单");
+  // 旧的一律禁（不论哪个域）
+  assert.ok(src.includes("...SCREEN_QQ_TOOLS"), "旧工具要永远追加到 deny");
+  // 新工具只在非 qq 域禁
+  assert.ok(src.includes('if (domainName !== "qq") deny.push(...ONEBOT_QQ_TOOLS)'), "新工具只在 qq 放行");
 });
