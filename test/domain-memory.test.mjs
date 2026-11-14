@@ -93,9 +93,11 @@ test("renderDomainBlock：只有对应域才渲染，空/不存在返回空串",
   remember(root, { dim: "talk", text: "家在 (96,104,3)", why: "位置规则", domain: "mc" });
 
   const block = renderDomainBlock(root, "mc");
-  assert.ok(block.includes("mc 专项记忆"));
+  assert.ok(block.includes("mc 记忆"), "标题要标明这是 mc 域的记忆");
+  assert.ok(block.includes("常识"), "要说明这是她的常识");
+  assert.ok(block.includes("直接照这里答"), "要明确：被问到就照这里答，别重新观察");
   assert.ok(block.includes("家在 (96,104,3)"));
-  assert.ok(block.includes("只在这个场景注入"), "要告诉她这块在别处看不到");
+  assert.ok(block.includes("只在本场景注入"), "要告诉她这块在别处看不到");
 
   assert.equal(renderDomainBlock(root, "qq"), "", "别的域看不到 mc 的记忆");
 });
