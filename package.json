@@ -24,6 +24,11 @@
   },
   "homepage": "https://github.com/wblnn/dsh-soul-core#readme",
   "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
