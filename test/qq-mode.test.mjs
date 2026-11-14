@@ -48,10 +48,10 @@ test("qq 域：人格块里有 OneBot 操作说明", () => {
   const { block } = render("qq");
   assert.ok(block.includes("你在 QQ 上"), "要有场景说明");
   assert.ok(block.includes("协议端"), "要说清走协议端，不是截屏");
-  assert.ok(block.includes("qq_status"), "先看通道状态");
-  assert.ok(block.includes("qq_recent"), "要教她读上下文");
-  assert.ok(block.includes("qq_send"), "要教她怎么发");
-  assert.ok(block.includes("qq_wait"), "要告诉她是真推送，别轮询");
+  assert.ok(block.includes("napcat_status"), "先看通道状态");
+  assert.ok(block.includes("napcat_recent"), "要教她读上下文");
+  assert.ok(block.includes("napcat_send"), "要教她怎么发");
+  assert.ok(block.includes("napcat_wait"), "要告诉她是真推送，别轮询");
   assert.ok(block.includes("别一口气"), "群里别刷屏");
   assert.ok(block.includes("旧") && block.includes("备用"), "旧虚拟屏方案要说明已停用但保留");
 });
